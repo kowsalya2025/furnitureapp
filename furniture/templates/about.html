@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Blogs | Nagercoil Furniture World{% endblock %}
+
+{% block nav_blogs %}active{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+.about {
+    background: #f5f5f5;
+    padding: 40px 0;
+    text-align: center;
+}
+
+.about-title {
+    font-size: 32px;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+/* CENTER BOX (NOT FULL WIDTH) */
+.about-box {
+    width: 85%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(to right, #f6d365, #ff7e00);
+    border-radius: 4px;
+    padding: 30px;
+    position: relative;
+    overflow: visible;
+}
+
+/* LEFT IMAGE */
+.about-image {
+    width: 45%;
+    position: relative;
+}
+
+.about-image img {
+    width: 100%;
+    transform: scale(1.05);
+    animation: zoom 2s infinite alternate ease-in-out;
+}
+
+/* ZOOM */
+@keyframes zoom {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+}
+
+/* RIGHT CONTENT */
+.about-content {
+    width: 50%;
+    color: white;
+    text-align: center;
+}
+
+.about-content h2 {
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+.about-content h3 {
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.about-content p {
+    color: black;
+    font-size: 16px;
+}
+
+/* SOCIAL ICONS (CENTER ROW) */
+.social {
+    margin-top: 20px;
+}
+
+.social i {
+    font-size: 18px;
+    margin: 0 10px;
+    background: black;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* BOTTOM TEXT */
+.about-bottom {
+    width: 75%;
+    margin: 40px auto;
+    text-align: left;
+    color: #333;
+    line-height: 1.6;
+}
+
+
+.features {
+    width: 85%;
+    margin: 60px auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+/* CARD */
+.feature-card {
+    width: 30%;
+}
+
+/* IMAGE */
+.feature-card img {
+    /* width: 100%; */
+    width: 250px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* TITLE */
+.feature-card h3 {
+    margin-top: 20px;
+    font-size: 20px;
+    font-style: italic;
+}
+
+/* TEXT */
+.feature-card p {
+    margin-top: 10px;
+    color: #333;
+    line-height: 1.6;
+}
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+
+
+<section class="about">
+
+    <h1 class="about-title">About us for our casino</h1>
+
+    <div class="about-box">
+
+        <!-- LEFT IMAGE -->
+        <div class="about-image">
+            <img src="{% static 'images/about.png' %}" alt="">
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="about-content">
+            <h2>Welcome to a better way to furnish your home</h2>
+            <h3>Welcome to [Furniture Casino].</h3>
+
+            <p>
+                We’re a passionate team of furniture enthusiasts dedicated to bringing you thoughtfully designed,
+                high-quality pieces
+            </p>
+
+            <div class="social">
+                <i class="fab fa-youtube"></i>
+                <i class="fab fa-google"></i>
+                <i class="fab fa-facebook"></i>
+                <i class="fab fa-twitter"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM TEXT -->
+    <div class="about-bottom">
+        <p>
+            At <b>[Furniture Casino]</b>, we believe that your home should reflect who you are — comfortable,
+            stylish, and full of character. We’re a passionate team of furniture enthusiasts dedicated to bringing you
+            thoughtfully designed, high-quality pieces that transform every space into something truly special
+        </p>
+    </div>
+
+</section>
+
+{% load static %}
+
+<section class="features">
+
+    <div class="feature-card">
+        <img src="{% static 'images/about1.png' %}" alt="">
+        <h3>Our Philosophy</h3>
+        <p>
+            We believe furniture should do more than fill a space — it should inspire.
+            That’s why every piece we offer combines function, form, and feeling.
+            Whether you're furnishing a cozy apartment or designing your dream home,
+            we aim to help you express your personal style effortlessly
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <img src="{% static 'images/about2.png' %}" alt="">
+        <h3>Craftsmanship Matters</h3>
+        <p>
+            We work closely with skilled artisans and trusted manufacturers who share
+            our commitment to quality. From hand-carved wood to precision stitching on upholstery,
+            every detail is crafted with care and durability in mind.
+        </p>
+    </div>
+
+    <div class="feature-card">
+        <img src="{% static 'images/about3.png' %}" alt="">
+        <h3>Sustainability & Responsibility</h3>
+        <p>
+            We’re committed to sustainability by using responsibly sourced wood,
+            recycled materials, and eco-friendly packaging. Our goal is to create
+            beautiful furniture that respects the planet — and future generations.
+        </p>
+    </div>
+
+</section>
+
+
+{% endblock %}

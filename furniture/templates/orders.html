@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load shop_tags %}
+
+{% block title %}My Orders{% endblock %}
+{% block nav_profile %}active{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* PAGE */
+.order-page {
+    padding: 60px 80px;
+}
+
+/* TITLE */
+.page-title {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 600;
+    margin-bottom: 50px;
+}
+
+/* LAYOUT */
+.order-container {
+    display: flex;
+    gap: 80px;
+    align-items: flex-start;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* MENU BUTTON */
+.menu-btn {
+    text-decoration: none;
+    background: #f4d35e;
+    padding: 25px;
+    border-radius: 18px;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    color: #000;
+    box-shadow: 4px 6px 0 rgba(0,0,0,0.25);
+    transition: 0.3s;
+}
+
+/* ACTIVE (ORANGE) */
+.menu-btn.active {
+    background: #ff7a00;
+    color: #fff;
+}
+
+/* HOVER */
+.menu-btn:hover {
+    transform: translateY(-3px);
+}
+
+/* RIGHT SIDE */
+.orders-content {
+    flex: 1;
+}
+
+/* PRODUCTS TITLE */
+.section-title {
+    font-size: 30px;
+    font-weight: 500;
+    margin-bottom: 30px;
+}
+
+/* CARD */
+.order-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* IMAGE */
+.product-img {
+    width: 180px;
+    height: 140px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+}
+
+.product-img img {
+    width: 120px;
+}
+
+/* INFO */
+.product-info {
+    flex: 1;
+    background: #f4d35e;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+/* PRICE */
+.price {
+    font-weight: 600;
+}
+
+</style>
+
+<section class="order-page">
+
+    <h1 class="page-title">My Order</h1>
+
+    <div class="order-container">
+
+        <!-- LEFT MENU -->
+        <div class="sidebar">
+
+            <a href="{% url 'profile' %}" class="menu-btn">
+                Personal Information
+            </a>
+
+            <a href="{% url 'orders' %}" class="menu-btn active">
+                My Order
+            </a>
+
+            <a href="{% url 'password_change' %}" class="menu-btn">
+                Password Manager
+            </a>
+
+            <a href="{% url 'logout' %}" class="menu-btn">
+                Logout
+            </a>
+
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="orders-content">
+
+            <h2 class="section-title">Purchased Products</h2>
+
+            {% if orders %}
+                {% for order in orders %}
+                    {% for item in order.items.all %}
+                        <!-- PRODUCT CARD -->
+                        <div class="order-card">
+                            <div class="product-img">
+                                <img src="{% product_image_src item.product %}" alt="{{ item.product.name }}" width="120" height="120" loading="lazy">
+                            </div>
+
+                            <div class="product-info">
+                                <span>{{ item.product.name }}</span>
+                                <span>Qty: {{ item.quantity }}</span>
+                                <span class="price">Rs.{{ item.subtotal|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>You haven't placed any orders yet.</p>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

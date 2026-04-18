@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery | Nagercoil Furniture World{% endblock %}
+{% block content %}
+
+<style>
+
+.blogtitle{
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #111;
+}
+.contact {
+    background: #f5f5f5;
+    padding: 40px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 20px;
+} 
+
+/* TITLE */
+.contact-title {
+    font-size: 20px;
+    margin: 40px 0;        /* ✅ remove side margins */
+    padding: 0;            /* ✅ remove side padding */
+}
+
+/* ROW */
+.contact-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+   margin: 40px 0; 
+
+}
+
+/* CARD */
+.contact-card {
+    width: 30%;
+    text-align: left;
+}
+
+/* IMAGE */
+.contact-card img {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* SECOND ROW (2 CARDS CENTERED) */
+
+.second-row .contact-card {
+    width: 40%;
+}
+
+/* SECOND ROW */
+.second-row {
+  
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+   
+}
+
+/* MAKE IMAGE + CONTENT SIDE BY SIDE */
+.horizontal {
+    display: flex;            /* 🔥 IMPORTANT */
+    align-items: center;
+    gap: 20px;
+    width: 40%;
+}
+
+/* IMAGE */
+.zoom-img {
+    width: 45%;
+    overflow: hidden;
+    border-radius: 15px;
+}
+
+.zoom-img img {
+    width: 100%;
+    animation: zoomInOut 1s infinite alternate ease-in-out;
+}
+
+/* CONTENT */
+.card-content {
+    width: 55%;
+}
+
+/* ZOOM */
+@keyframes zoomInOut {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.15); }
+}
+
+/* SOCIAL ICONS */
+.social-icons {
+    margin-top: 15px;
+}
+
+.social-icons i {
+    margin: 0 8px;
+    font-size: 18px;
+    background: black;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+} */
+
+</style>
+
+
+
+<section class="contact">
+
+    <div class="container">
+
+        <!-- TOP TEXT -->
+         <h2 class="blogtitle">Contact Us for Our Casino</h2>
+        
+         <p class="contact-title">
+            We're here to help yomake your house feel like home
+         </p>
+        <p class="contact-title">
+            Whether you have questions about a product, need help with your order, or simply want advice on styling your space —
+            <b>our team is ready to assist.</b>
+        </p>
+
+        <!-- ROW 1 -->
+        <div class="contact-row">
+
+            <div class="contact-card">
+                <img src="{% static 'images/con1.png' %}">
+                <h3>📞 Call Us</h3>
+                <p>+91 98765 43210</p>
+            </div>
+
+            <div class="contact-card">
+                <img src="{% static 'images/con2.png' %}">
+                <h3>📧 Email Us</h3>
+                <p>support@yourfurniturestore.com</p>
+            </div>
+
+            <div class="contact-card">
+                <img src="{% static 'images/con3.png' %}">
+                <h3>🎧 Customer Support Hours</h3>
+                <p>Monday – Saturday: 9:00 AM to 6:00 PM</p>
+                <p><b>Sunday:</b> Closed</p>
+            </div>
+
+        </div>
+
+        <!-- ROW 2 -->
+        <div class="contact-row second-row">
+
+            <!-- SHOWROOM -->
+            <div class="contact-card horizontal">
+                <div class="zoom-img">
+                    <img src="{% static 'images/con4.png' %}">
+                </div>
+
+                <div class="card-content">
+                    <h3>📍 Showroom</h3>
+                    <p>
+                        Your Furniture Store<br>
+                        123 Home Street,<br>
+                        Design City, IN 600001
+                    </p>
+                </div>
+            </div>
+
+            <!-- SOCIAL -->
+            <div class="contact-card horizontal">
+                <div class="zoom-img">
+                    <img src="{% static 'images/con5.png' %}">
+                </div>
+
+                <div class="card-content">
+                    <div class="social-icons">
+                        <i class="fab fa-youtube"></i>
+                        <i class="fab fa-google"></i>
+                        <i class="fab fa-facebook"></i>
+                        <i class="fab fa-twitter"></i>
+                    </div>
+
+                    <p>Connect With Us on Social Media</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div> <!-- ✅ IMPORTANT CLOSE -->
+
+</section>
+
+
+{% endblock %}

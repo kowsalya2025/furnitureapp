@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load shop_tags %}
+
+{% block title %}Order Completed - Nagercoil Furniture World{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: #f8f6f2; /* same off-white background */
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .success-container {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+  }
+
+  /* Header */
+  .success-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .success-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 8px;
+  }
+
+  .success-subtitle {
+    font-size: 16px;
+    color: #777;
+    font-weight: 400;
+  }
+
+  /* Info Banner */
+  .info-banner {
+    background: #ffda55; /* Warm yellow */
+    padding: 30px 40px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+  }
+
+  .info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .info-label {
+    font-size: 14px;
+    color: #444;
+    font-weight: 400;
+  }
+
+  .info-value {
+    font-size: 15px;
+    color: #111;
+    font-weight: 600;
+  }
+
+  .btn-invoice {
+    background: linear-gradient(90deg, #ff8c00 0%, #ff7700 100%);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    text-decoration: none;
+    transition: transform 0.2s;
+  }
+
+  .btn-invoice:hover {
+    transform: scale(1.03);
+  }
+
+  /* Order Details Area */
+  .details-section {
+    padding: 0 10px;
+  }
+
+  .details-header {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 25px;
+  }
+
+  .products-header {
+    font-size: 18px;
+    font-weight: 500;
+    color: #111;
+    margin-bottom: 15px;
+    margin-left: 20px;
+  }
+
+  /* Product Card */
+  .product-receipt-card {
+    display: flex;
+    height: 120px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .product-image-box {
+    background: white;
+    width: 140px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .product-image-box img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .product-info-box {
+    flex: 1;
+    background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+  }
+
+  .product-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .product-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+  }
+
+</style>
+
+<div class="success-container">
+  
+  <div class="success-header">
+    <div class="success-title">Order Completed</div>
+    <div class="success-subtitle">Thank you.You are order has been<br>received</div>
+  </div>
+
+  <div class="info-banner">
+    <div class="info-col">
+      <span class="info-label">Order ID</span>
+      <span class="info-value">#{{ order.id }}</span>
+    </div>
+    <div class="info-col">
+      <span class="info-label">Payment Method</span>
+      <span class="info-value">{{ order.payment_method|default:"—" }}</span>
+    </div>
+    <div class="info-col">
+      <span class="info-label">Transaction Id</span>
+      <span class="info-value">{{ order.transaction_ref|default:"—" }}</span>
+    </div>
+    <div class="info-col">
+      <span class="info-label">Estimate Delivery Date</span>
+      <span class="info-value">{{ delivery_date }}</span>
+    </div>
+    <div class="info-action">
+      <a href="{% url 'orders' %}" class="btn-invoice">Download Invoice</a>
+    </div>
+  </div>
+
+  <div class="details-section">
+    <div class="details-header">Order Details</div>
+    
+    <div class="products-header">Products</div>
+
+    {% for line in order.items.all %}
+    <div class="product-receipt-card">
+      <div class="product-image-box">
+        <img src="{% product_image_src line.product %}" alt="{{ line.product.name }}" width="120" height="100" loading="lazy">
+      </div>
+      <div class="product-info-box">
+        <span class="product-name">{{ line.product.name }} <small style="font-weight:500;">(×{{ line.quantity }})</small></span>
+        <span class="product-price">Rs.{{ line.subtotal|floatformat:2 }}</span>
+      </div>
+    </div>
+    {% endfor %}
+
+    <p style="margin-top:24px;font-size:1rem;font-weight:600;">Order total: Rs.{{ order.total_amount|floatformat:2 }}</p>
+
+  </div>
+
+</div>
+{% endblock content %}

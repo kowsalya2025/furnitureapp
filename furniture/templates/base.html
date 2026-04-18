@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Nagercoil Furniture World{% endblock %}</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+ 
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange-primary: #E87C1E;
+      --orange-dark: #D4660A;
+      --orange-light: #F5A623;
+      --orange-bg: #FFF8F0;
+      --black: #1A1A1A;
+      --white: #FFFFFF;
+      --gray-light: #F5F5F0;
+      --nav-height: 88px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--gray-light);
+      color: var(--black);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: var(--nav-height);
+      background: var(--gray-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      z-index: 1000;
+    }
+
+   .nav-logo {
+      width: 80px;
+      height: 80px;
+     overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    flex-shrink: 0;
+    }
+
+    .nav-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Logo placeholder SVG when no image */
+    .nav-logo-text {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--orange-primary);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-style: bold;
+      text-decoration: none;
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--black);
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a.active {
+      color: var(--orange-primary);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--orange-primary);
+      border-radius: 2px;
+    }
+
+    .nav-links a:hover { color: var(--orange-primary); }
+
+    .nav-register {
+      background: #FFD93D;
+      color: #000;
+      padding: 10px 24px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      margin-right: 12px;
+    }
+
+    .nav-register:hover {
+      background: #FFC700;
+    }
+
+    .nav-icons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1.5px solid var(--orange-primary);
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--orange-primary);
+      font-size: 16px;
+      transition: background 0.2s, color 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-icon-btn:hover {
+      background: var(--orange-primary);
+      color: var(--white);
+    }
+
+    .nav-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid var(--orange-primary);
+    }
+
+    .nav-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Dropdown */
+    .nav-account-wrapper {
+      position: relative;
+    }
+
+    .account-dropdown {
+      position: absolute;
+      top: calc(100% + 16px);
+      right: 0;
+      width: 280px;
+      background: #FFD93D;
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      z-index: 2000;
+    }
+
+    .account-dropdown.show { display: block; }
+
+    .account-dropdown h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--black);
+      margin-bottom: 20px;
+    }
+
+    .account-dropdown hr {
+      border: none;
+      border-top: 1.5px solid rgba(0,0,0,0.12);
+      margin-bottom: 16px;
+    }
+
+    .account-dropdown ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .account-dropdown ul li a {
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--black);
+      transition: color 0.2s;
+    }
+
+    .account-dropdown ul li a:hover { color: var(--orange-dark); }
+
+    /* ─── PAGE CONTENT ─── */
+    main {
+      padding-top: var(--nav-height);
+    }
+
+    /* ===== FOOTER ===== */
+.footer {
+  background: linear-gradient(135deg, #f5c518, #ff8c00);
+  padding: 40px 0;
+  border-radius: 30px 30px 0 0;
+  margin-top: 40px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+}
+
+/* COLUMNS */
+.footer-col {
+  flex: 1;
+}
+
+.footer-col h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 18px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col ul li {
+  margin-bottom: 12px;
+}
+
+.footer-col ul li a {
+  text-decoration: none;
+  color: #2a2a2a;
+  font-size: 15px;
+  transition: color 0.3s;
+}
+
+.footer-col ul li a:hover {
+  color: #fff;
+}
+
+.footer-col p {
+  font-size: 14px;
+  color: #2a2a2a;
+  margin: 6px 0;
+  line-height: 1.6;
+}
+
+/* LOGO COL */
+.col-logo {
+  flex: 0.8;
+}
+
+.footer-logo img {
+  width: 90px;
+  text-align: center;
+}
+
+.footer-furniture-icons {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 130px;
+}
+
+.footer-furniture-icons img {
+  width: 145px;
+  opacity: 0.85;
+}
+
+/* FOLLOW COL */
+.col-follow {
+  flex: 0.8;
+  text-align: left;
+}
+
+/* SOCIAL ICONS */
+.footer-social {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.footer-social i {
+  font-size: 22px;
+  padding: 10px;
+  border-radius: 8px;
+  animation: iconColorCycle 2s infinite alternate ease-in-out;
+}
+
+.footer-social i:nth-child(1) { animation-delay: 0s; }
+.footer-social i:nth-child(2) { animation-delay: 0.4s; }
+.footer-social i:nth-child(3) { animation-delay: 0.8s; }
+.footer-social i:nth-child(4) { animation-delay: 1.2s; }
+
+/* YELLOW ↔ ORANGE COLOR CYCLE */
+@keyframes iconColorCycle {
+  0%   { color: #fbfaf7;}
+  50%  { color: #ebc908;}
+  100% { color: #f2f1f0; }
+}
+
+    /* {% block extra_css %}{% endblock %} */
+  </style>
+</head>
+<body>
+
+<nav>
+  <!-- Logo -->
+  <div class="nav-logo">
+    {% block nav_logo %}
+        <img src="{% static 'images/logo.png' %}" alt="Logo" width="60" height="60">
+    {% endblock %}
+</div>
+
+  <!-- Nav Links -->
+  <ul class="nav-links">
+    <li><a href="{% url 'home' %}" class="{% block nav_home %}{% endblock %}">Home</a></li>
+    <li><a href="{% url 'blogs' %}" class="{% block nav_blogs %}{% endblock %}">Blogs</a></li>
+    <li><a href="{% url 'gallery' %}" class="{% block nav_gallery %}{% endblock %}">Gallery</a></li>
+    <li><a href="{% url 'categories' %}" class="{% block nav_categories %}{% endblock %}">Categories</a></li>
+    <li><a href="{% url 'about' %}" class="{% block nav_about %}{% endblock %}">About us</a></li>
+    <li><a href="{% url 'contact' %}" class="{% block nav_contact %}{% endblock %}">Contact</a></li>
+  </ul>
+
+  <!-- Register Button + Icons + Avatar -->
+  <div class="nav-icons">
+    {% if not user.is_authenticated %}
+    <a href="{% url 'register' %}" class="nav-register">Register</a>
+    {% endif %}
+
+    <a href="{% url 'notifications' %}" class="nav-icon-btn" title="Notifications">
+      <i class="fa-regular fa-bell"></i>
+    </a>
+    <a href="{% url 'cart' %}" class="nav-icon-btn" title="Cart">
+      <i class="fa-solid fa-cart-shopping"></i>
+    </a>
+    <a href="{% url 'wishlist' %}" class="nav-icon-btn" title="Wishlist">
+      <i class="fa-regular fa-heart"></i>
+    </a>
+
+    <!-- Account Avatar + Dropdown -->
+    <div class="nav-account-wrapper">
+      <div class="nav-avatar" onclick="toggleDropdown()" title="Account">
+        {% if user.is_authenticated and user.profile_picture %}
+          <img src="{{ user.profile_picture.url }}" alt="Profile" />
+        {% else %}
+          <img src="{% static 'images/dp.png' %}" alt="Profile" />
+        {% endif %}
+      </div>
+      <div class="account-dropdown" id="accountDropdown">
+        <h3>My Accounts</h3>
+        <hr />
+        <ul>
+          <li><a href="{% url 'profile' %}">Personal Information</a></li>
+          <li><a href="{% url 'orders' %}">My Order</a></li>
+          <li><a href="{% url 'password_change' %}">Password Manager</a></li>
+          <li><a href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-container">
+
+    <!-- COL 1: LOGO + ICONS -->
+    <div class="footer-col col-logo">
+      <div class="footer-logo">
+        <img src="{% static 'images/logo.png' %}">
+      </div>
+      <div class="footer-furniture-icons">
+        <img src="{% static 'images/footer.png' %}">
+        
+      </div>
+    </div>
+
+    <!-- COL 2: ABOUT US -->
+    <div class="footer-col">
+      <h4>About Us</h4>
+      <ul>
+        <li><a href="#">Who We Are</a></li>
+        <li><a href="#">Our Mission</a></li>
+        <li><a href="#">How It Works</a></li>
+        <li><a href="#">Success Stories</a></li>
+      </ul>
+    </div>
+
+    <!-- COL 3: QUICK LINKS -->
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#">Browse</a></li>
+        <li><a href="#">Products</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+
+    <!-- COL 4: CONTACT -->
+    <div class="footer-col">
+      <h4>Contact & Social</h4>
+      <p>123 saik Street, Chennai, TN</p>
+      <p>+91-7867980-688</p>
+      <p>furn@furniturecasino.com</p>
+      <br>
+      <p>© 2025 Furniture casino. All rights reserved.</p>
+      <p><b>Terms & Conditions | Privacy Policy</b></p>
+    </div>
+
+    <!-- COL 5: FOLLOW US -->
+    <div class="footer-col col-follow">
+      <h4>Follow Us On :</h4>
+      <div class="footer-social">
+        <i class="fab fa-youtube"></i>
+        <i class="fab fa-google"></i>
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-twitter"></i>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+{% block extra_js %}{% endblock %}
+
+<script>
+  function toggleDropdown() {
+    const dd = document.getElementById('accountDropdown');
+    dd.classList.toggle('show');
+  }
+  document.addEventListener('click', function(e) {
+    const wrapper = document.querySelector('.nav-account-wrapper');
+    if (!wrapper.contains(e.target)) {
+      document.getElementById('accountDropdown').classList.remove('show');
+    }
+  });
+</script>
+</body>
+</html>

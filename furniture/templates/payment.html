@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - Nagercoil Furniture World{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background: #f8f6f2; /* same off-white background */
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .payment-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  /* Progress Bar */
+  .progress-bar-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+  }
+  .progress-bar {
+    background: linear-gradient(90deg, #ff8c00 0%, #ffc107 100%);
+    border-radius: 10px;
+    padding: 20px 50px;
+    display: flex;
+    gap: 80px;
+    align-items: center;
+  }
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 15px;
+    color: #1a1a1a;
+  }
+  
+  .radio-circle {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: white;
+    display: inline-block;
+    border: 3px solid #ffeedd;
+  }
+  .radio-circle.active {
+    border: 5px solid white;
+    background-color: #ff8c00;
+  }
+
+  /* Layout */
+  .payment-layout {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+  }
+
+  /* Left Side: Order Summary */
+  .order-summary {
+    width: 350px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 25px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+
+  .summary-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .summary-divider {
+    height: 1px;
+    background: #eee;
+    margin: 20px 0;
+  }
+
+  .summary-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #111;
+  }
+
+  /* Right Side: Payment Options */
+  .payment-options-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .payment-page-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #111;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .select-payment-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #111;
+  }
+
+  .payment-box {
+    background: linear-gradient(135deg, #ff8c00 0%, #ffde59 100%);
+    border-radius: 12px;
+    padding: 30px 40px;
+    box-shadow: 0 6px 20px rgba(255, 140, 0, 0.2);
+    position: relative;
+    min-height: 220px;
+  }
+
+  .payment-option-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    cursor: pointer;
+  }
+
+  .payment-option-row input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border: 2px solid white; 
+    border-radius: 50%;
+    appearance: none;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .payment-option-row input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      background-color: white;
+      border-radius: 50%;
+  }
+
+  .payment-logo {
+    width: 45px;
+    height: 30px;
+    background: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;
+  }
+  
+  .payment-logo img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+  }
+
+  .payment-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+  }
+
+  .btn-submit {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, #ff8c00 0%, #ff7700 100%);
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  /* Step 2 Styles */
+  .detail-title {
+    color: white;
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  .detail-form-group {
+    width: 65%;
+    margin: 0 auto 20px auto;
+    text-align: left;
+  }
+  .detail-label {
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .detail-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid white;
+    background: transparent;
+    border-radius: 4px;
+    color: white;
+    outline: none;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+  .btn-confirm {
+    display: block;
+    width: 250px;
+    margin: 35px auto 0;
+    background: #ff7700;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    text-align: center;
+    transition: background 0.2s;
+  }
+  .btn-confirm:hover {
+    background: #e66a00;
+  }
+
+  .payment-errors {
+    color: #c62828;
+    font-size: 13px;
+    margin: 10px 0 16px;
+    list-style: none;
+    padding: 0;
+    text-align: left;
+  }
+  .payment-errors li { margin: 4px 0; }
+
+</style>
+
+<div class="payment-container">
+  
+  <!-- Progress Bar -->
+  <div class="progress-bar-wrapper">
+    <div class="progress-bar">
+      <div class="progress-step">
+        <span class="radio-circle"></span>
+        Cards
+      </div>
+      <div class="progress-step">
+        <span class="radio-circle"></span>
+        Checkout Page
+      </div>
+      <div class="progress-step">
+        <span class="radio-circle active"></span>
+        Payment Page
+      </div>
+    </div>
+  </div>
+
+  <div class="payment-layout">
+    
+    <!-- Left: Order Summary -->
+    <div class="order-summary">
+      <div class="summary-title">Order Summary</div>
+      <div class="summary-divider" style="margin-top: 10px; margin-bottom: 30px;"></div>
+      
+      <div class="summary-row">
+        <span>Items</span>
+        <span>{% if cart %}{{ cart.items.count }}{% else %}0{% endif %}</span>
+      </div>
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span>{% if cart %}Rs.{{ cart.total|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
+      </div>
+      <div class="summary-row">
+        <span>Shipping</span>
+        <span>Rs.0.00</span>
+      </div>
+      <div class="summary-row">
+        <span>Taxes</span>
+        <span>Rs.0.00</span>
+      </div>
+      <div class="summary-row">
+        <span>Coupen Discount</span>
+        <span>Rs.0.00</span>
+      </div>
+
+      <div class="summary-divider"></div>
+
+      <div class="summary-total">
+        <span>Total</span>
+        <span>{% if cart %}Rs.{{ cart.total|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
+      </div>
+    </div>
+
+    <!-- Right: Select Payment -->
+    <div class="payment-options-section">
+      <h1 class="payment-page-title">Payment Page</h1>
+      <div class="select-payment-title">Select payment</div>
+
+      <form class="payment-box" method="post" action="{% url 'complete_order' %}" id="paymentForm" novalidate>
+        {% csrf_token %}
+        {% if payment_form.non_field_errors %}
+          <ul class="payment-errors">{% for e in payment_form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+        {% endif %}
+        <!-- STEP 1: Select Method -->
+        <div id="step1" {% if payment_form.errors %}style="display:none"{% endif %}>
+            <!-- UPI -->
+            <label class="payment-option-row">
+              <input type="radio" name="payment_method" value="UPI" {% if selected_payment == 'UPI' %}checked{% endif %}>
+              <div class="payment-logo">
+                <img src="{% static 'images/upi.png' %}" alt="UPI" onerror="this.src='https://cdn.iconscout.com/icon/free/png-256/upi-logo-5093755-4241031.png'">
+              </div>
+              <span class="payment-name">UPI</span>
+            </label>
+
+            <!-- Google Pay -->
+            <label class="payment-option-row">
+              <input type="radio" name="payment_method" value="Google Pay" {% if selected_payment == 'Google Pay' %}checked{% endif %}>
+              <div class="payment-logo">
+                <img src="{% static 'images/gpay.png' %}" alt="Google Pay" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Google_Pay_Logo_%282020%29.svg/1024px-Google_Pay_Logo_%282020%29.svg.png'">
+              </div>
+              <span class="payment-name">Google Pay</span>
+            </label>
+
+            <!-- Phone Pay -->
+            <label class="payment-option-row">
+              <input type="radio" name="payment_method" value="PhonePe" {% if selected_payment == 'PhonePe' %}checked{% endif %}>
+              <div class="payment-logo">
+                <img src="{% static 'images/phonepe.png' %}" alt="Phone Pay" onerror="this.src='https://download.logo.wine/logo/PhonePe/PhonePe-Logo.wine.png'">
+              </div>
+              <span class="payment-name">Phone Pay</span>
+            </label>
+
+            <button type="button" class="btn-submit" id="paymentStep1Btn">Submit</button>
+        </div>
+
+        <!-- STEP 2: Enter Details -->
+        <div id="step2" {% if payment_form.errors %}style="display:block"{% else %}style="display:none"{% endif %}>
+            <button type="button" class="btn-confirm" style="width:auto;margin:0 auto 16px;padding:8px 16px;font-size:14px;background:#fff;color:#ff7700;border:1px solid #ff7700;" id="paymentBackBtn">Change payment method</button>
+            <div class="detail-title">Payment Details</div>
+
+            <div class="detail-form-group">
+                <label class="detail-label" for="{{ payment_form.payer_name.id_for_label }}">Name*</label>
+                {{ payment_form.payer_name }}
+                {% if payment_form.payer_name.errors %}
+                  <ul class="payment-errors">{% for e in payment_form.payer_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <div class="detail-form-group">
+                <label class="detail-label" for="{{ payment_form.upi_id.id_for_label }}">UPI ID{% if selected_payment == 'UPI' %}*{% endif %}</label>
+                {{ payment_form.upi_id }}
+                {% if payment_form.upi_id.errors %}
+                  <ul class="payment-errors">{% for e in payment_form.upi_id.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-confirm">Confirm payment</button>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+
+</div>
+<script>
+(function () {
+  function showStep1() {
+    var s1 = document.getElementById('step1');
+    var s2 = document.getElementById('step2');
+    if (s1 && s2) {
+      s1.style.display = 'block';
+      s2.style.display = 'none';
+    }
+  }
+  function showStep2() {
+    var s1 = document.getElementById('step1');
+    var s2 = document.getElementById('step2');
+    if (s1 && s2) {
+      s1.style.display = 'none';
+      s2.style.display = 'block';
+    }
+  }
+  var btn = document.getElementById('paymentStep1Btn');
+  if (btn) btn.addEventListener('click', showStep2);
+  var back = document.getElementById('paymentBackBtn');
+  if (back) back.addEventListener('click', showStep1);
+})();
+</script>
+{% endblock content %}

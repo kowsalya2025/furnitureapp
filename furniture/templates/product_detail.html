@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load shop_tags %}
+
+{% block title %}{{ product.name }} - Nagercoil Furniture World{% endblock %}
+
+{% block content %}
+<style>
+  .pd-wrap {
+    max-width: 1100px;
+    margin: 48px auto;
+    padding: 0 24px;
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    font-family: 'Inter', sans-serif;
+  }
+  .pd-image {
+    flex: 1;
+    min-width: 280px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+  }
+  .pd-image img {
+    max-width: 100%;
+    max-height: 360px;
+    object-fit: contain;
+  }
+  .pd-info {
+    flex: 1;
+    min-width: 280px;
+  }
+  .pd-info h1 {
+    font-size: 1.75rem;
+    color: #141414;
+    margin-bottom: 12px;
+  }
+  .pd-cat {
+    color: #ff8212;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .pd-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ff8212;
+    margin-bottom: 20px;
+  }
+  .pd-desc {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .pd-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+  }
+  .pd-btn {
+    padding: 12px 28px;
+    border-radius: 24px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: inline-block;
+    text-align: center;
+  }
+  .pd-btn-primary {
+    background: linear-gradient(90deg, #ffb747 0%, #ff8212 100%);
+    color: #fff;
+  }
+  .pd-btn-secondary {
+    background: #fff;
+    border: 1px solid #ddd;
+    color: #141414;
+  }
+  .pd-btn-primary:hover { opacity: 0.95; }
+  .pd-btn-secondary:hover { background: #fff3e6; color: #ff8212; }
+</style>
+
+<div class="pd-wrap">
+  <div class="pd-image">
+    <img src="{% product_image_src product %}" alt="{{ product.name }}" loading="lazy">
+  </div>
+  <div class="pd-info">
+    <h1>{{ product.name }}</h1>
+    <div class="pd-cat">{{ product.category.name }}</div>
+    <div class="pd-price">Rs. {{ product.price|floatformat:2 }}</div>
+    <p class="pd-desc">{{ product.description|default:"Quality furniture crafted for your home." }}</p>
+    <p style="color:#666;font-size:0.9rem;margin-bottom:16px;">Stock: {{ product.stock }} available</p>
+    <div class="pd-actions">
+      {% if user.is_authenticated %}
+        <a class="pd-btn pd-btn-primary" href="{% url 'add_to_cart' product.id %}?next={% url 'cart' %}">Add to cart</a>
+      {% else %}
+        <a class="pd-btn pd-btn-primary" href="{% url 'login' %}?next={% url 'product_detail' product.id %}">Login to purchase</a>
+      {% endif %}
+      <a class="pd-btn pd-btn-secondary" href="{% url 'categories' %}">Back to categories</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

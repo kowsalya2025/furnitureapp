@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery | Nagercoil Furniture World{% endblock %}
+{% block content %}
+<style>
+  body {
+    background: #f8f3eb;
+  }
+
+  /* ===== GALLERY HERO ===== */
+.gallery-hero {
+  padding: 60px 40px 40px 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* BADGES ROW */
+.gallery-hero-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 10px;
+}
+
+/* CIRCLE IMAGES */
+.hero-badge img {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #d4b896;
+}
+
+  .gallery-hero h1 {
+    font-size: 2.8rem;
+    margin: 0;
+    color: #141414;
+    font-weight: 800;
+  }
+
+/* SUBTITLE */
+.gallery-hero h2 {
+  font-size: 20px;
+  font-weight: 400;
+  color: #2a2a2a;
+  text-align: center;
+  margin: 8px 0 30px 0;
+}
+
+/* DESCRIPTION */
+.gallery-hero p {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.8;
+  max-width: 850px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+/* Container */
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Grid Layout */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 60px;
+    margin-bottom: 60px;
+}
+
+/* Card Base */
+.card {
+    text-align: left;
+}
+
+/* Vertical Image Card (Left) */
+.card.vertical img {
+    width: 220px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 20px;
+    display: block;
+}
+
+/* Center Cards */
+.card.center {
+    text-align: center;
+}
+
+/* Right Card Small Image */
+.small-img {
+    width: 180px;
+    display: block;
+    margin-left: auto;
+}
+
+/* Circle Images */
+.circle-img {
+    width: 120px;
+    height: 120px;
+    margin: auto;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.circle-img.large {
+    width: 180px;
+    height: 180px;
+}
+
+.circle-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Text Styling */
+.card h3 {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.card p {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.6;
+    max-width: 260px;
+}
+
+/* Alignment Fix */
+.card.right {
+    text-align: right;
+}
+
+.card.right p {
+    margin-left: auto;
+}
+
+/* Fix 2nd row alignment */
+.gallery-grid.second-row {
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Row 2 horizontal layout */
+.second-row .card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    text-align: left;
+}
+
+/* Keep circle image size fixed */
+.second-row .circle-img {
+    flex-shrink: 0;
+}
+
+/* Text container */
+.second-row .card h3,
+.second-row .card p {
+    margin: 0;
+}
+
+/* Optional: wrap text nicely */
+.second-row .card p {
+    margin-top: 8px;
+}
+
+</style>
+
+<section class="gallery-hero">
+  <div class="gallery-hero-badges">
+    <div class="hero-badge">
+      <img src="{% static 'images/ga1.png' %}" alt="Gallery">
+    </div>
+    <h1>Furniture Gallery</h1>
+    <div class="hero-badge">
+      <img src="{% static 'images/ga2.png' %}" alt="Gallery">
+    </div>
+  </div>
+  <h2>Explore Our Stylish & Comfortable Collections</h2>
+  <p>Discover our curated range of premium furniture pieces designed to bring elegance, comfort, and functionality to your home. Whether you're looking to refresh your living room, upgrade your bedroom, or create a productive office space, our gallery offers inspiration and top-quality craftsmanship.</p>
+</section>
+<section class="gallery-section">
+    <div class="container">
+
+        <!-- Row 1 -->
+        <div class="gallery-grid">
+
+            <!-- Card 1 -->
+            <div class="card vertical">
+                <img src="{% static 'images/ga3.png' %}" alt="">
+                <h3>Dining in Style</h3>
+                <p>
+                    Explore our dining tables, chairs, and sideboards crafted for comfort and durability
+                </p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card center">
+                <div class="circle-img">
+                    <img src="{% static 'images/ga4.png' %}" alt="">
+                </div>
+                <h3>Storage & Shelving</h3>
+                <p>
+                    Storage & Shelving Discover modern cabinets, bookshelves, and multipurpose organizers
+                </p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card right">
+                <img class="small-img" src="{% static 'images/homecut.png' %}" alt="">
+                <h3>Bedroom Bliss</h3>
+                <p>
+                    Explore our dining tables, chairs, and sideboards crafted for comfort and durability
+                </p>
+            </div>
+
+        </div>
+
+       <!-- Row 2 -->
+<div class="gallery-grid second-row">
+
+    <!-- Card 4 -->
+    <!-- Card 4 -->
+<div class="card center">
+    <div class="circle-img">
+        <img src="{% static 'images/ga6.png' %}" alt="">
+    </div>
+    <div class="text">
+        <h3>Workspace Essentials</h3>
+        <p>
+            Ergonomic chairs, functional desks, and storage units to elevate productivity
+        </p>
+    </div>
+</div>
+
+<!-- Card 5 -->
+<div class="card center">
+    <div class="circle-img large">
+        <img src="{% static 'images/ga7.png' %}" alt="">
+    </div>
+    <div class="text">
+        <h3>Outdoor Comfort</h3>
+        <p>
+            Stylish patio furniture, garden benches, and weather-resistant lounge sets
+        </p>
+    </div>
+</div>
+</div>
+</section>
+{% endblock %}

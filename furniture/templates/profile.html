@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Personal Information - Nagercoil Furniture World{% endblock %}
+{% block nav_profile %}active{% endblock %}
+
+{% block content %}
+<style>
+/* PAGE */
+.profile-page {
+    margin-top: 40px;
+    padding: 60px 80px;
+}
+
+/* LAYOUT */
+.account-container {
+    display: flex;
+    gap: 80px;
+    align-items: flex-start;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* MENU BUTTON */
+.menu-btn {
+    display: block;
+    text-decoration: none;
+    background: #fce154;
+    padding: 25px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    color: #000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+/* ACTIVE (ORANGE) */
+.menu-btn.active {
+    background: #ff8c00;
+    color: #fff;
+}
+
+/* HOVER */
+.menu-btn:hover {
+    transform: translateY(-3px);
+}
+
+/* RIGHT CONTENT */
+.content-area {
+    flex: 1;
+    position: relative;
+    max-width: 600px;
+}
+
+/* PROFILE AVATAR */
+.profile-avatar {
+    position: absolute;
+    right: -50px;
+    top: -90px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* FORM */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.form-row {
+    display: flex;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.form-group label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #111;
+    font-weight: 500;
+}
+
+.form-group input {
+    padding: 18px 20px;
+    border-radius: 12px;
+    border: none;
+    background: #fce154;
+    outline: none;
+    font-size: 15px;
+    color: #111;
+    width: 100%;
+    box-sizing: border-box;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+}
+
+/* SUBMIT BUTTON */
+.btn-center {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 15px;
+}
+
+.btn-update {
+    background: #ff8c00;
+    color: #fff;
+    border: none;
+    padding: 16px 45px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: background 0.3s;
+}
+
+.btn-update:hover {
+    background: #e67d00;
+}
+</style>
+
+<section class="profile-page">
+    <div class="account-container">
+
+        <!-- LEFT SIDE MENU -->
+        <div class="sidebar">
+            <a href="{% url 'profile' %}" class="menu-btn active">
+                Personal Information
+            </a>
+            <a href="{% url 'orders' %}" class="menu-btn">
+                My Order
+            </a>
+            <a href="{% url 'password_change' %}" class="menu-btn">
+                Password Manager
+            </a>
+            <a href="{% url 'logout' %}" class="menu-btn">
+                Logout
+            </a>
+        </div>
+
+        <!-- RIGHT SIDE CONTENT -->
+        <div class="content-area">
+
+            <div class="profile-avatar">
+                {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="Profile">
+                {% else %}
+                    <img src="{% static 'images/dp.png' %}" onerror="this.src='https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=ff8c00&color=fff'" alt="Profile">
+                {% endif %}
+            </div>
+
+            <form class="profile-form" method="POST" action="{% url 'profile' %}">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" name="first_name" value="{{ user.first_name }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name" value="{{ user.last_name }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" name="email" value="{{ user.email }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" name="phone" value="{{ user.phone|default:'' }}">
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <input type="text" name="gender" placeholder="">
+                </div>
+
+                <div class="btn-center">
+                    <button type="submit" class="btn-update">Update Change</button>
+                </div>
+
+                {% if messages %}
+                    <div style="margin-top: 15px;">
+                        {% for message in messages %}
+                            <p style="color: #ff8c00; font-weight: 600;">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </form>
+
+        </div>
+    </div>
+</section>
+
+{% endblock content %}
