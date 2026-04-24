@@ -152,6 +152,13 @@
     color: #111;
   }
 
+  @media print {
+    .no-print, nav, footer { display: none !important; }
+    body { background: white; }
+    .success-container { margin: 0; padding: 20px; max-width: 100%; box-shadow: none; }
+    .product-receipt-card { box-shadow: none; border: 1px solid #eee; }
+    /* Ensure layout stays intact in print */
+  }
 </style>
 
 <div class="success-container">
@@ -178,8 +185,8 @@
       <span class="info-label">Estimate Delivery Date</span>
       <span class="info-value">{{ delivery_date }}</span>
     </div>
-    <div class="info-action">
-      <a href="{% url 'orders' %}" class="btn-invoice">Download Invoice</a>
+    <div class="info-action no-print">
+      <button onclick="window.print()" class="btn-invoice">Download Invoice</button>
     </div>
   </div>
 
@@ -189,18 +196,35 @@
     <div class="products-header">Products</div>
 
     {% for line in order.items.all %}
-    <div class="product-receipt-card">
-      <div class="product-image-box">
-        <img src="{% product_image_src line.product %}" alt="{{ line.product.name }}" width="120" height="100" loading="lazy">
+    <a href="{% url 'product_detail' line.product.id %}" style="text-decoration: none;">
+      <div class="product-receipt-card">
+        <div class="product-image-box">
+          <img src="{% product_image_src line.product %}" alt="{{ line.product.name }}" width="120" height="100" loading="lazy">
+        </div>
+        <div class="product-info-box">
+          <span class="product-name">{{ line.product.name }} <small style="font-weight:500;">(×{{ line.quantity }})</small></span>
+          <span class="product-price">Rs.{{ line.subtotal|floatformat:2 }}</span>
+        </div>
       </div>
-      <div class="product-info-box">
-        <span class="product-name">{{ line.product.name }} <small style="font-weight:500;">(×{{ line.quantity }})</small></span>
-        <span class="product-price">Rs.{{ line.subtotal|floatformat:2 }}</span>
-      </div>
-    </div>
+    </a>
     {% endfor %}
 
-    <p style="margin-top:24px;font-size:1rem;font-weight:600;">Order total: Rs.{{ order.total_amount|floatformat:2 }}</p>
+    <!-- Order Breakdown -->
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 30px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span>Subtotal</span><span>Rs.{{ order.subtotal|floatformat:2 }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span>Shipping</span><span>Rs.{{ order.shipping|floatformat:2 }}</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+            <span>Taxes</span><span>Rs.{{ order.tax|floatformat:2 }}</span>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #ddd; margin: 15px 0;">
+        <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 600;">
+            <span>Order total</span><span>Rs.{{ order.total_amount|floatformat:2 }}</span>
+        </div>
+    </div>
 
   </div>
 

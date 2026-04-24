@@ -1,4 +1,5 @@
 import uuid
+import re
 from datetime import timedelta
 
 from urllib.parse import quote
@@ -25,10 +26,16 @@ def home(request):
     hero = HeroImage.objects.filter(is_active=True).first()
     featured_products = Product.objects.all()[:8]
     categories = Category.objects.all()
+    wishlist_products = []
+    if request.user.is_authenticated:
+        wishlist_obj = Wishlist.objects.filter(user=request.user).first()
+        if wishlist_obj:
+            wishlist_products = list(wishlist_obj.products.all())
     context = {
         'hero_image': hero.image if hero else None,
         'featured_products': featured_products,
         'categories': categories,
+        'wishlist_products': wishlist_products,
     }
     return render(request, 'home.html', context)
 
@@ -161,6 +168,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
+            messages.success(request, 'Login Successful')
             if next_url:
                 return redirect(next_url)
             return redirect('home')
@@ -170,6 +178,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    messages.success(request, 'Logout Successful')
     return redirect('home')
 
 
@@ -177,17 +186,28 @@ def register_view(request):
     if request.user.is_authenticated:
         return redirect('home')
     if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm = request.POST.get('confirm_password')
-        if password != confirm:
+        username = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '')
+        confirm = request.POST.get('confirm_password', '')
+        
+        # Validations
+        if ' ' in username:
+            messages.error(request, 'Username should follow proper format (no spaces).')
+        elif not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            messages.error(request, 'Email should be in valid format (e.g., name@gmail.com).')
+        elif len(password) < 8:
+            messages.error(request, 'Password is too short. It must be at least 8 characters.')
+        elif password != confirm:
             messages.error(request, 'Passwords do not match.')
         elif User.objects.filter(username=username).exists():
             messages.error(request, 'Username already taken.')
+        elif User.objects.filter(email=email).exists():
+            messages.error(request, 'Email already exists, please use a different email.')
         else:
             user = User.objects.create_user(username=username, email=email, password=password)
             login(request, user)
+            messages.success(request, 'Registration and Login Successful')
             return redirect('home')
     return render(request, 'register.html')
 
@@ -201,6 +221,7 @@ def profile(request):
         user.last_name = request.POST.get('last_name', user.last_name)
         user.email = request.POST.get('email', user.email)
         user.phone = request.POST.get('phone', user.phone)
+        user.gender = request.POST.get('gender', user.gender)
         if request.FILES.get('profile_picture'):
             user.profile_picture = request.FILES['profile_picture']
         user.save()
@@ -319,7 +340,7 @@ def complete_order(request):
 
     order = Order.objects.create(
         user=request.user,
-        total_amount=cart_obj.total(),
+        total_amount=cart_obj.grand_total,
         status='confirmed',
         payment_method=raw_pm,
         transaction_ref=transaction_ref,
@@ -333,7 +354,7 @@ def complete_order(request):
         )
     cart_obj.items.all().delete()
     request.session.pop('checkout_details', None)
-    messages.success(request, 'Your order has been placed.')
+    messages.success(request, 'Payment Successful! Your order has been placed.')
     return redirect('order_success', order_id=order.pk)
 
 

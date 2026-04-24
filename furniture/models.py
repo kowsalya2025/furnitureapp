@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser, Group, Permission
 class User(AbstractUser):
     profile_picture = models.ImageField(upload_to='profiles/', null=True, blank=True)
     phone = models.CharField(max_length=15, blank=True)
+    gender = models.CharField(max_length=10, blank=True)
 
     # Override to avoid reverse accessor clashes
     groups = models.ManyToManyField(
@@ -86,6 +87,31 @@ class Cart(models.Model):
     def total(self):
         return sum(item.subtotal() for item in self.items.all())
 
+    @property
+    def subtotal(self):
+        return self.total()
+
+    @property
+    def shipping(self):
+        if self.items.exists():
+            return 100 if self.subtotal < 5000 else 0
+        return 0
+
+    @property
+    def tax(self):
+        # Let's assume 5% tax
+        return float(self.subtotal) * 0.05
+
+    @property
+    def coupon_discount(self):
+        # Simplistic coupon placeholder
+        return 0
+
+    @property
+    def grand_total(self):
+        gt = float(self.subtotal) + self.shipping + self.tax - self.coupon_discount
+        return gt if gt > 0 else 0
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
@@ -121,6 +147,24 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Order #{self.pk} – {self.user.username}'
+
+    @property
+    def subtotal(self):
+        return sum(item.subtotal() for item in self.items.all())
+
+    @property
+    def shipping(self):
+        if self.items.exists():
+            return 100 if self.subtotal < 5000 else 0
+        return 0
+
+    @property
+    def tax(self):
+        return float(self.subtotal) * 0.05
+
+    @property
+    def grand_total(self):
+        return float(self.subtotal) + self.shipping + self.tax
 
 
 class OrderItem(models.Model):

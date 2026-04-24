@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load shop_tags %}
 
 {% block title %}My Wishlist - Nagercoil Furniture World{% endblock %}
 
@@ -147,11 +148,7 @@
                     <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist-btn-remove" title="Remove">✕</a>
                     
                     <div class="card-img-wrapper">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-                        {% else %}
-                            <img src="{% static 'images/placeholder.png' %}" onerror="this.src='https://dummyimage.com/200x200/f4f4f4/888.png&text=No+Image'" alt="{{ product.name }}">
-                        {% endif %}
+                        <img src="{% product_image_src product %}" alt="{{ product.name }}">
                     </div>
                     
                     <div class="card-details">

@@ -303,26 +303,26 @@
       </div>
       <div class="summary-row">
         <span>Subtotal</span>
-        <span>{% if cart %}Rs.{{ cart.total|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
+        <span>{% if cart %}Rs.{{ cart.subtotal|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
       </div>
       <div class="summary-row">
         <span>Shipping</span>
-        <span>Rs.0.00</span>
+        <span>{% if cart %}Rs.{{ cart.shipping|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
       </div>
       <div class="summary-row">
         <span>Taxes</span>
-        <span>Rs.0.00</span>
+        <span>{% if cart %}Rs.{{ cart.tax|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
       </div>
       <div class="summary-row">
-        <span>Coupen Discount</span>
-        <span>Rs.0.00</span>
+        <span>Coupon Discount</span>
+        <span>{% if cart %}Rs.{{ cart.coupon_discount|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
       </div>
 
       <div class="summary-divider"></div>
 
       <div class="summary-total">
         <span>Total</span>
-        <span>{% if cart %}Rs.{{ cart.total|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
+        <span>{% if cart %}Rs.{{ cart.grand_total|floatformat:2 }}{% else %}Rs.0.00{% endif %}</span>
       </div>
     </div>
 
@@ -339,12 +339,13 @@
         <!-- STEP 1: Select Method -->
         <div id="step1" {% if payment_form.errors %}style="display:none"{% endif %}>
             <!-- UPI -->
+            <div style="font-weight: 600; color: white; margin-bottom: 15px;">UPI Options</div>
             <label class="payment-option-row">
-              <input type="radio" name="payment_method" value="UPI" {% if selected_payment == 'UPI' %}checked{% endif %}>
+              <input type="radio" name="payment_method" value="Pay via UPI App" {% if selected_payment == 'Pay via UPI App' %}checked{% endif %}>
               <div class="payment-logo">
                 <img src="{% static 'images/upi.png' %}" alt="UPI" onerror="this.src='https://cdn.iconscout.com/icon/free/png-256/upi-logo-5093755-4241031.png'">
               </div>
-              <span class="payment-name">UPI</span>
+              <span class="payment-name">Pay via any UPI app</span>
             </label>
 
             <!-- Google Pay -->
@@ -362,7 +363,17 @@
               <div class="payment-logo">
                 <img src="{% static 'images/phonepe.png' %}" alt="Phone Pay" onerror="this.src='https://download.logo.wine/logo/PhonePe/PhonePe-Logo.wine.png'">
               </div>
-              <span class="payment-name">Phone Pay</span>
+              <span class="payment-name">PhonePe</span>
+            </label>
+
+            <!-- Card -->
+            <div style="font-weight: 600; color: white; margin: 25px 0 15px;">Cards</div>
+            <label class="payment-option-row">
+              <input type="radio" name="payment_method" value="Credit / Debit Card" {% if selected_payment == 'Credit / Debit Card' %}checked{% endif %}>
+              <div class="payment-logo">
+                <img src="https://cdn-icons-png.flaticon.com/512/1086/1086741.png" alt="Card">
+              </div>
+              <span class="payment-name">Credit / Debit Card</span>
             </label>
 
             <button type="button" class="btn-submit" id="paymentStep1Btn">Submit</button>
@@ -371,25 +382,59 @@
         <!-- STEP 2: Enter Details -->
         <div id="step2" {% if payment_form.errors %}style="display:block"{% else %}style="display:none"{% endif %}>
             <button type="button" class="btn-confirm" style="width:auto;margin:0 auto 16px;padding:8px 16px;font-size:14px;background:#fff;color:#ff7700;border:1px solid #ff7700;" id="paymentBackBtn">Change payment method</button>
-            <div class="detail-title">Payment Details</div>
+            <div class="detail-title" id="step2Title">Payment Details</div>
 
-            <div class="detail-form-group">
-                <label class="detail-label" for="{{ payment_form.payer_name.id_for_label }}">Name*</label>
-                {{ payment_form.payer_name }}
-                {% if payment_form.payer_name.errors %}
-                  <ul class="payment-errors">{% for e in payment_form.payer_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                {% endif %}
+            <!-- UPI Details -->
+            <div id="upiFields" style="display: none;">
+              <div class="detail-form-group">
+                  <label class="detail-label" for="{{ payment_form.upi_id.id_for_label }}">UPI ID* (example: name@bank)</label>
+                  {{ payment_form.upi_id }}
+                  {% if payment_form.upi_id.errors %}
+                    <ul class="payment-errors">{% for e in payment_form.upi_id.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
             </div>
 
-            <div class="detail-form-group">
-                <label class="detail-label" for="{{ payment_form.upi_id.id_for_label }}">UPI ID{% if selected_payment == 'UPI' %}*{% endif %}</label>
-                {{ payment_form.upi_id }}
-                {% if payment_form.upi_id.errors %}
-                  <ul class="payment-errors">{% for e in payment_form.upi_id.errors %}<li>{{ e }}</li>{% endfor %}</ul>
-                {% endif %}
+            <!-- App Details -->
+            <div id="appFields" style="display: none;">
+              <p style="color: white; text-align: center; margin-bottom: 20px;">You will be redirected to the selected app to complete payment securely.</p>
             </div>
 
-            <button type="submit" class="btn-confirm">Confirm payment</button>
+            <!-- Card Details -->
+            <div id="cardFields" style="display: none;">
+              <div class="detail-form-group">
+                  <label class="detail-label" for="{{ payment_form.card_number.id_for_label }}">Card Number*</label>
+                  {{ payment_form.card_number }}
+                  {% if payment_form.card_number.errors %}
+                    <ul class="payment-errors">{% for e in payment_form.card_number.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+              <div style="display: flex; gap: 10px; width: 65%; margin: 0 auto 20px auto;">
+                <div style="flex: 1;">
+                  <label class="detail-label" for="{{ payment_form.expiry_date.id_for_label }}">Expiry*</label>
+                  {{ payment_form.expiry_date }}
+                  {% if payment_form.expiry_date.errors %}
+                    <ul class="payment-errors">{% for e in payment_form.expiry_date.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                  {% endif %}
+                </div>
+                <div style="flex: 1;">
+                  <label class="detail-label" for="{{ payment_form.cvv.id_for_label }}">CVV*</label>
+                  {{ payment_form.cvv }}
+                  {% if payment_form.cvv.errors %}
+                    <ul class="payment-errors">{% for e in payment_form.cvv.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="detail-form-group">
+                  <label class="detail-label" for="{{ payment_form.payer_name.id_for_label }}">Card Holder Name</label>
+                  {{ payment_form.payer_name }}
+                  {% if payment_form.payer_name.errors %}
+                    <ul class="payment-errors">{% for e in payment_form.payer_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+                  {% endif %}
+              </div>
+            </div>
+
+            <button type="submit" class="btn-confirm" id="paymentSubmitBtn">Confirm payment</button>
         </div>
       </form>
 
@@ -414,12 +459,57 @@
     if (s1 && s2) {
       s1.style.display = 'none';
       s2.style.display = 'block';
+
+      // update fields depending on selected radio
+      var selected = document.querySelector('input[name="payment_method"]:checked');
+      if (selected) {
+        var val = selected.value;
+        document.getElementById('step2Title').innerText = 'Complete with ' + val;
+        
+        document.getElementById('upiFields').style.display = 'none';
+        document.getElementById('appFields').style.display = 'none';
+        document.getElementById('cardFields').style.display = 'none';
+        
+        if (val === 'Pay via UPI App') {
+          document.getElementById('upiFields').style.display = 'block';
+          document.getElementById('paymentSubmitBtn').innerText = 'Confirm payment';
+        } else if (val === 'Credit / Debit Card') {
+          document.getElementById('cardFields').style.display = 'block';
+          document.getElementById('paymentSubmitBtn').innerText = 'Pay securely';
+        } else {
+          // Google Pay / PhonePe
+          document.getElementById('appFields').style.display = 'block';
+          document.getElementById('paymentSubmitBtn').innerText = 'Open App and Pay';
+        }
+      }
     }
   }
   var btn = document.getElementById('paymentStep1Btn');
   if (btn) btn.addEventListener('click', showStep2);
   var back = document.getElementById('paymentBackBtn');
   if (back) back.addEventListener('click', showStep1);
+
+  // If page loaded with errors, initialize step 2 fields
+  var s2 = document.getElementById('step2');
+  if (s2 && s2.style.display === 'block') {
+      // Simulate showStep2 logic to display correct fields
+      var selected = document.querySelector('input[name="payment_method"]:checked');
+      if (selected) {
+        var val = selected.value;
+        document.getElementById('step2Title').innerText = 'Complete with ' + val;
+        
+        if (val === 'Pay via UPI App') {
+          document.getElementById('upiFields').style.display = 'block';
+          document.getElementById('paymentSubmitBtn').innerText = 'Confirm payment';
+        } else if (val === 'Credit / Debit Card') {
+          document.getElementById('cardFields').style.display = 'block';
+          document.getElementById('paymentSubmitBtn').innerText = 'Pay securely';
+        } else {
+          document.getElementById('appFields').style.display = 'block';
+          document.getElementById('paymentSubmitBtn').innerText = 'Open App and Pay';
+        }
+      }
+  }
 })();
 </script>
 {% endblock content %}

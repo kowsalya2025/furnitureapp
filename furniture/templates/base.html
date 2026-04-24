@@ -335,10 +335,75 @@
   100% { color: #f2f1f0; }
 }
 
-    /* {% block extra_css %}{% endblock %} */
+/* TOAST MESSAGES */
+.toast-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast-message {
+  min-width: 250px;
+  background: var(--white);
+  color: var(--black);
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: 4px solid var(--orange-primary);
+  animation: slideInRight 0.3s ease forwards;
+}
+.toast-message.success { border-left-color: #28a745; }
+.toast-message.error { border-left-color: #dc3545; }
+.toast-message.warning { border-left-color: #ffc107; }
+.toast-message.info { border-left-color: #17a2b8; }
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+    @keyframes fadeOutRight {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+
+    @media (max-width: 990px) {
+      .nav-links { display: none; }
+      nav { padding: 15px 20px; height: auto; }
+      .nav-logo { width: 60px; height: 60px; }
+      .nav-register { display: none; }
+      .nav-icons { gap: 10px; }
+    }
   </style>
 </head>
 <body>
+
+<!-- GLOBAL MESSAGES TOAST -->
+{% if messages %}
+<div class="toast-container" id="toastContainer">
+  {% for message in messages %}
+  <div class="toast-message {{ message.tags }}">
+    <span>{{ message }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 <nav>
   <!-- Logo -->
@@ -350,12 +415,12 @@
 
   <!-- Nav Links -->
   <ul class="nav-links">
-    <li><a href="{% url 'home' %}" class="{% block nav_home %}{% endblock %}">Home</a></li>
-    <li><a href="{% url 'blogs' %}" class="{% block nav_blogs %}{% endblock %}">Blogs</a></li>
-    <li><a href="{% url 'gallery' %}" class="{% block nav_gallery %}{% endblock %}">Gallery</a></li>
-    <li><a href="{% url 'categories' %}" class="{% block nav_categories %}{% endblock %}">Categories</a></li>
-    <li><a href="{% url 'about' %}" class="{% block nav_about %}{% endblock %}">About us</a></li>
-    <li><a href="{% url 'contact' %}" class="{% block nav_contact %}{% endblock %}">Contact</a></li>
+    <li><a href="{% url 'home' %}" class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}{% block nav_home %}{% endblock %}">Home</a></li>
+    <li><a href="{% url 'blogs' %}" class="{% if request.resolver_match.url_name == 'blogs' %}active{% endif %}{% block nav_blogs %}{% endblock %}">Blogs</a></li>
+    <li><a href="{% url 'gallery' %}" class="{% if request.resolver_match.url_name == 'gallery' %}active{% endif %}{% block nav_gallery %}{% endblock %}">Gallery</a></li>
+    <li><a href="{% url 'categories' %}" class="{% if request.resolver_match.url_name == 'categories' or request.resolver_match.url_name == 'shop' %}active{% endif %}{% block nav_categories %}{% endblock %}">Categories</a></li>
+    <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}{% block nav_about %}{% endblock %}">About us</a></li>
+    <li><a href="{% url 'contact' %}" class="{% if request.resolver_match.url_name == 'contact' or request.resolver_match.url_name == 'enquiry' %}active{% endif %}{% block nav_contact %}{% endblock %}">Contact</a></li>
   </ul>
 
   <!-- Register Button + Icons + Avatar -->
@@ -367,8 +432,11 @@
     <a href="{% url 'notifications' %}" class="nav-icon-btn" title="Notifications">
       <i class="fa-regular fa-bell"></i>
     </a>
-    <a href="{% url 'cart' %}" class="nav-icon-btn" title="Cart">
+    <a href="{% url 'cart' %}" class="nav-icon-btn" title="Cart" style="position: relative;">
       <i class="fa-solid fa-cart-shopping"></i>
+      {% if user.is_authenticated and user.cart.items.count > 0 %}
+        <span class="cart-badge">{{ user.cart.items.count }}</span>
+      {% endif %}
     </a>
     <a href="{% url 'wishlist' %}" class="nav-icon-btn" title="Wishlist">
       <i class="fa-regular fa-heart"></i>
@@ -378,19 +446,24 @@
     <div class="nav-account-wrapper">
       <div class="nav-avatar" onclick="toggleDropdown()" title="Account">
         {% if user.is_authenticated and user.profile_picture %}
-          <img src="{{ user.profile_picture.url }}" alt="Profile" />
+          <img src="{{ user.profile_picture.url }}" alt="Profile" id="navAvatarDP" />
         {% else %}
-          <img src="{% static 'images/dp.png' %}" alt="Profile" />
+          <img src="{% static 'images/dp.png' %}" alt="Profile" id="navAvatarDP" />
         {% endif %}
       </div>
       <div class="account-dropdown" id="accountDropdown">
         <h3>My Accounts</h3>
         <hr />
         <ul>
-          <li><a href="{% url 'profile' %}">Personal Information</a></li>
-          <li><a href="{% url 'orders' %}">My Order</a></li>
-          <li><a href="{% url 'password_change' %}">Password Manager</a></li>
-          <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'profile' %}">Personal Information</a></li>
+            <li><a href="{% url 'orders' %}">My Order</a></li>
+            <li><a href="{% url 'password_change' %}">Password Manager</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'register' %}">Create New Account</a></li>
+          {% endif %}
         </ul>
       </div>
     </div>
@@ -421,10 +494,10 @@
     <div class="footer-col">
       <h4>About Us</h4>
       <ul>
-        <li><a href="#">Who We Are</a></li>
-        <li><a href="#">Our Mission</a></li>
-        <li><a href="#">How It Works</a></li>
-        <li><a href="#">Success Stories</a></li>
+        <li><a href="{% url 'about' %}">Who We Are</a></li>
+        <li><a href="{% url 'about' %}">Our Mission</a></li>
+        <li><a href="{% url 'about' %}">How It Works</a></li>
+        <li><a href="{% url 'home' %}">Success Stories</a></li>
       </ul>
     </div>
 
@@ -432,11 +505,11 @@
     <div class="footer-col">
       <h4>Quick Links</h4>
       <ul>
-        <li><a href="#">Browse</a></li>
-        <li><a href="#">Products</a></li>
-        <li><a href="#">Services</a></li>
-        <li><a href="#">FAQs</a></li>
-        <li><a href="#">Blog</a></li>
+        <li><a href="{% url 'categories' %}">Browse</a></li>
+        <li><a href="{% url 'shop' %}">Products</a></li>
+        <li><a href="{% url 'contact' %}">Services</a></li>
+        <li><a href="{% url 'contact' %}">FAQs</a></li>
+        <li><a href="{% url 'blogs' %}">Blog</a></li>
       </ul>
     </div>
 
@@ -474,10 +547,20 @@
   }
   document.addEventListener('click', function(e) {
     const wrapper = document.querySelector('.nav-account-wrapper');
-    if (!wrapper.contains(e.target)) {
-      document.getElementById('accountDropdown').classList.remove('show');
+    if (wrapper && !wrapper.contains(e.target)) {
+      const dd = document.getElementById('accountDropdown');
+      if (dd) dd.classList.remove('show');
     }
   });
+
+  // Auto-dismiss toasts after 3 seconds
+  setTimeout(() => {
+    const toasts = document.querySelectorAll('.toast-message');
+    toasts.forEach(t => {
+      t.style.animation = 'fadeOutRight 0.3s ease forwards';
+      setTimeout(() => t.remove(), 300);
+    });
+  }, 3000);
 </script>
 </body>
 </html>

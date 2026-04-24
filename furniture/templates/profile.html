@@ -164,26 +164,28 @@
         <!-- RIGHT SIDE CONTENT -->
         <div class="content-area">
 
-            <div class="profile-avatar">
-                {% if user.profile_picture %}
-                    <img src="{{ user.profile_picture.url }}" alt="Profile">
-                {% else %}
-                    <img src="{% static 'images/dp.png' %}" onerror="this.src='https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=ff8c00&color=fff'" alt="Profile">
-                {% endif %}
-            </div>
-
-            <form class="profile-form" method="POST" action="{% url 'profile' %}">
+            <form class="profile-form" method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 
+                <div class="profile-avatar" style="position: absolute; right: -50px; top: -90px; cursor: pointer;" onclick="document.getElementById('profilePicInput').click();">
+                    {% if user.profile_picture %}
+                        <img src="{{ user.profile_picture.url }}" alt="Profile" id="avatarPreview">
+                    {% else %}
+                        <img src="{% static 'images/dp.png' %}" id="avatarPreview" onerror="this.src='https://ui-avatars.com/api/?name={{ user.first_name }}+{{ user.last_name }}&background=ff8c00&color=fff'" alt="Profile">
+                    {% endif %}
+                    <div style="position: absolute; bottom: 0; background: rgba(0,0,0,0.5); width: 100%; text-align: center; color: white; font-size: 12px; padding: 4px 0;">Edit</div>
+                </div>
+                <input type="file" name="profile_picture" id="profilePicInput" style="display: none;" accept="image/*" onchange="previewImage(event)">
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>First Name</label>
-                        <input type="text" name="first_name" value="{{ user.first_name }}">
+                        <input type="text" name="first_name" value="{{ user.first_name }}" pattern="[A-Za-z\s]+" title="Only alphabets and spaces are allowed" required>
                     </div>
 
                     <div class="form-group">
                         <label>Last Name</label>
-                        <input type="text" name="last_name" value="{{ user.last_name }}">
+                        <input type="text" name="last_name" value="{{ user.last_name }}" pattern="[A-Za-z\s]+" title="Only alphabets and spaces are allowed" required>
                     </div>
                 </div>
 
@@ -199,7 +201,12 @@
 
                 <div class="form-group">
                     <label>Gender</label>
-                    <input type="text" name="gender" placeholder="">
+                    <select name="gender" style="padding: 18px 20px; border-radius: 12px; border: none; background: #fce154; outline: none; font-size: 15px; color: #111; width: 100%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);">
+                        <option value="" {% if not user.gender %}selected{% endif %}>Select Gender</option>
+                        <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
                 </div>
 
                 <div class="btn-center">
@@ -218,5 +225,20 @@
         </div>
     </div>
 </section>
+
+<script>
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+        const output = document.getElementById('avatarPreview');
+        if (output) output.src = reader.result;
+        
+        // Also instantly reflect the change up in the navbar!
+        const navAvatar = document.getElementById('navAvatarDP');
+        if (navAvatar) navAvatar.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
 
 {% endblock content %}

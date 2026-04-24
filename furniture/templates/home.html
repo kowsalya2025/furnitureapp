@@ -68,6 +68,9 @@
 /* Buttons */
 .buttons {
     margin-top: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .btn {
@@ -75,7 +78,6 @@
     border-radius: 10px;
     border: none;
     cursor: pointer;
-    margin-right: 15px;
     font-size: 14px;
 }
 
@@ -87,6 +89,7 @@
 .btn-link {
     background: none;
     border-bottom: 2px solid black;
+    padding-bottom: 2px;
 }
 
 /* Ratings */
@@ -120,7 +123,9 @@
 
 /* Chair Image */
 .hero-right img {
-    /* width: 500px; */
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
     z-index: 2;
     position: relative;
 }
@@ -822,8 +827,8 @@
         <div class="sub-text">Furniture collection</div>
 
         <div class="buttons">
-            <button class="btn btn-primary">Shop now →</button>
-            <a href="{% url 'enquiry' %}" class="btn btn-link" style="text-decoration:none;">Enquiry Furniture</a>
+            <a href="{% url 'shop' %}" class="btn btn-primary" style="text-decoration:none; display: inline-block;">Shop now →</a>
+            <a href="{% url 'enquiry' %}" class="btn btn-link" style="text-decoration:none; display: inline-block;">Enquiry Furniture</a>
         </div>
 
         <div class="ratings">
@@ -914,71 +919,33 @@
   <!-- Products -->
   <div class="product-grid">
 
-    <!-- Card 1 -->
-    <div class="card" data-type="latest">
-      <div class="wishlist">♡</div>
-      <div class="card-image-wrapper">
-        <img src="{% static 'images/pro1.png' %}" alt="{{ featured_products.0.name }}">
-      </div>
-      <div class="card-content">
-        <h3>{{ featured_products.0.name|default:"Teak Chest of Drawer" }}</h3>
-        <p>{{ featured_products.0.description|default:"A sleek teak chest drawer designed for modern homes." }}</p>
-        <span class="price">Rs.{{ featured_products.0.price|default:"8000" }}</span>
-      </div>
+    {% for product in featured_products %}
+    <div class="card" data-type="{% cycle 'latest' 'featured' 'best' %}">
+      <!-- Heart -->
+      <a href="{% url 'toggle_wishlist' product.id %}" class="wishlist" style="text-decoration: none;">
+        {% if request.user.is_authenticated and product in wishlist_products %}♥{% else %}♡{% endif %}
+      </a>
+      <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+          <div class="card-image-wrapper">
+            <img src="{% product_image_src product %}" alt="{{ product.name }}">
+          </div>
+          <div class="card-content">
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description|truncatewords:8 }}</p>
+            <span class="price">Rs.{{ product.price|floatformat:2 }}</span>
+          </div>
+      </a>
       <div class="card-footer">
         <div class="card-actions">
-          <button class="btn">Shop now</button>
+          <a href="{% url 'shop' %}?category={{ product.category.slug }}" class="btn" style="text-decoration: none; padding: 10px 20px;">Shop now</a>
           <div class="action-stack">
-            <button class="btn-add"><span class="add-icon">🛒</span>Add</button>
+            <a href="{% url 'add_to_cart' product.id %}?next={{ request.path|urlencode }}" class="btn-add" style="text-decoration:none;"><span class="add-icon">🛒</span>Add</a>
             <span class="rating">★★★★★</span>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Card 2 -->
-    <div class="card" data-type="latest">
-      <div class="wishlist">♡</div>
-      <div class="card-image-wrapper">
-        <img src="{% static 'images/pro2.png'  %}" alt="{{ featured_products.1.name }}">
-      </div>
-      <div class="card-content">
-        <h3>{{ featured_products.1.name|default:"Teak Coffee Table" }}</h3>
-        <p>{{ featured_products.1.description|default:"Crafted from solid teak wood, this coffee table adds charm." }}</p>
-        <span class="price">Rs.{{ featured_products.1.price|default:"8000" }}</span>
-      </div>
-      <div class="card-footer">
-        <div class="card-actions">
-          <button class="btn">Shop now</button>
-          <div class="action-stack">
-            <button class="btn-add"><span class="add-icon">🛒</span>Add</button>
-            <span class="rating">★★★★★</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="card" data-type="featured">
-      <div class="wishlist">♡</div>
-      <div class="card-image-wrapper">
-        <img src="{% static 'images/pro3.png' %}" alt="Teak Dressers and Mirrors">
-      </div>
-      <div class="card-content">
-        <h3>Teak Dressers & Mirrors</h3>
-        <p>Crafted from solid teak wood, this dresser and mirror set brings elegant warmth to your space.</p>
-        <span class="price">Rs.8000</span>
-      </div>
-      <div class="card-footer">
-        <div class="card-actions">
-          <button class="btn">Shop now</button>
-          <div class="action-stack">
-            <button class="btn-add"><span class="add-icon">🛒</span>Add</button>
-            <span class="rating">★★★★★</span>
-          </div>
-        </div>
-      </div>
-    </div>
+    {% endfor %}
 
   </div>
 </section>

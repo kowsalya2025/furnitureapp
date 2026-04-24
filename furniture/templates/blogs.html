@@ -13,9 +13,19 @@
 
 .blogtitle h2 {
     text-align: center;
-    font-size: 36px;
+    font-size: 38px;
     margin-bottom: 20px;
-    color: #111;
+    background: linear-gradient(270deg, black, #ff7a00, #ffcc33);
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: textGradient 6s ease infinite;
+}
+
+@keyframes textGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* TOP LABEL */
@@ -46,7 +56,7 @@
 /* ITEM */
 .blog-item {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 25px;
     margin-bottom: 50px;
 }

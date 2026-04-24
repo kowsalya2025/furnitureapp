@@ -1,0 +1,362 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load shop_tags %}
+
+{% block title %}Shop - Nagercoil Furniture World{% endblock %}
+
+{% block content %}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  body {
+    background: #f5f5f5;
+  }
+
+  /* Filter Button */
+  #filterBtn {
+    margin-top: 20px;
+    position: fixed;
+    top: 80px;
+    left: 40px;
+    padding: 10px 18px;
+    font-size: 16px;
+    cursor: pointer;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    z-index: 100;
+  }
+
+  /* Layout */
+  .container {
+    display: flex;
+  }
+
+  /* Sidebar */
+  #sidebar {
+    position: fixed;
+    left: -300px;
+    top: 0;
+    width: 280px;
+    height: 100%;
+    background: #f4d35e;
+    padding: 25px;
+    transition: 0.4s ease;
+    overflow-y: auto;
+    z-index: 200;
+  }
+
+  #sidebar.active {
+    left: 0;
+  }
+
+  #sidebar h2 {
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: #141414;
+    margin-top: 50px;
+  }
+
+  .category {
+    margin-bottom: 20px;
+  }
+
+  .category h3 {
+    margin: 15px 0;
+    font-size: 1rem;
+    color: #141414;
+  }
+
+  .category ul {
+    list-style: none;
+  }
+
+  .category li {
+    padding: 8px 0;
+    cursor: pointer;
+    transition: 0.3s;
+    color: #333;
+    font-size: 0.95rem;
+  }
+
+  .category li:hover {
+    transform: translateX(5px);
+    color: #ff8212;
+  }
+
+  /* Products Container */
+  #products {
+    width: 100%;
+    padding: 80px 60px;
+  }
+
+  #products h1 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2rem;
+    color: #141414;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  /* Card */
+  .card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+  }
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .card-image-wrapper {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+.card img {
+    width: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.card:hover img {
+    transform: scale(1.15);
+}
+
+  .card-heart {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 24px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.9);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+  }
+
+  .card-heart:hover {
+    background: white;
+    color: #ff8212;
+  }
+
+  .card-content {
+    padding: 10px 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card h3 {
+    font-size: 1.1rem;
+    color: #141414;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .card p {
+    color: #5d5d5d;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 12px;
+    flex-grow: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+  }
+
+  .card-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ff8212;
+  }
+
+  .card-actions {
+    padding: 15px 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .action-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .rating {
+    color: #ff8212;
+    font-size: 0.7rem;
+  }
+
+  .btn-shop {
+    padding: 8px 18px;
+    background: linear-gradient(90deg, #ffb747 0%, #ff8212 100%);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s;
+  }
+
+  .btn-shop:hover {
+    transform: scale(1.05);
+  }
+
+  .btn-add {
+    background: white;
+    border: 1px solid #ddd;
+    color: #141414;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.3s;
+  }
+
+  .btn-add:hover {
+    background: #fff3e6;
+    color: #ff8212;
+  }
+
+  /* Responsive */
+  @media (max-width: 1080px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    #products {
+      padding: 80px 40px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    #products {
+      padding: 80px 20px;
+    }
+    #products h1 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<button id="filterBtn">Filter Products ✓</button>
+
+<div class="container">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <h2>Categories</h2>
+
+    <div class="category">
+      <ul>
+        <li><a href="{% url 'shop' %}" style="text-decoration:none; color:inherit; font-weight:{% if not active_category %}bold{% else %}normal{% endif %};">All Products</a></li>
+        {% for cat in categories %}
+        <li><a href="{% url 'shop' %}?category={{ cat.slug }}" style="text-decoration:none; color:inherit; font-weight:{% if active_category == cat.slug %}bold{% else %}normal{% endif %};">{{ cat.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Products -->
+  <main id="products">
+    <h1>Shop All Furniture</h1>
+
+    <div class="grid">
+      {% for product in products %}
+      <div class="card" data-category="{{ product.category.slug }}">
+        <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; color: inherit;">
+          <div class="card-image-wrapper">
+            <img src="{% product_image_src product %}" alt="{{ product.name }}">
+          </div>
+          <div class="card-content">
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description|truncatewords:8 }}</p>
+            <h2 class="card-price">Rs.{{ product.price|floatformat:2 }}</h2>
+          </div>
+        </a>
+        <div class="card-footer">
+          <div class="card-actions">
+            <!-- Wishlist Heart -->
+            <a href="{% url 'toggle_wishlist' product.id %}" style="text-decoration:none;">
+              <div class="card-heart" style="position:static; margin-right:auto; box-shadow:0 0 5px rgba(0,0,0,0.1);">
+                {% if request.user.is_authenticated and product in wishlist_products %}♥{% else %}♡{% endif %}
+              </div>
+            </a>
+            <div class="action-stack" style="flex-direction:row; align-items:center;">
+              <a class="btn-shop" href="{% url 'product_detail' product.id %}">View item</a>
+              <a class="btn-add" href="{% url 'add_to_cart' product.id %}?next={{ request.path|urlencode }}"><span class="add-icon">🛒</span>Add</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p style="text-align:center; font-size:18px; color:#555; grid-column:span 3;">No products found in this category.</p>
+      {% endfor %}
+    </div>
+  </main>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+  const btn = document.getElementById("filterBtn");
+  const sidebar = document.getElementById("sidebar");
+
+  btn.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+  });
+
+  /* Close sidebar when clicking outside */
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#sidebar") && !e.target.closest("#filterBtn")) {
+      sidebar.classList.remove("active");
+    }
+  });
+</script>
+{% endblock extra_js %}

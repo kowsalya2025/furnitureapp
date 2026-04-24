@@ -152,21 +152,27 @@
                 {% for order in orders %}
                     {% for item in order.items.all %}
                         <!-- PRODUCT CARD -->
-                        <div class="order-card">
-                            <div class="product-img">
-                                <img src="{% product_image_src item.product %}" alt="{{ item.product.name }}" width="120" height="120" loading="lazy">
-                            </div>
+                        <a href="{% url 'product_detail' item.product.id %}" style="text-decoration: none; color: inherit; display: block;">
+                          <div class="order-card">
+                              <div class="product-img">
+                                  <img src="{% product_image_src item.product %}" alt="{{ item.product.name }}" width="120" height="120" loading="lazy">
+                              </div>
 
-                            <div class="product-info">
-                                <span>{{ item.product.name }}</span>
-                                <span>Qty: {{ item.quantity }}</span>
-                                <span class="price">Rs.{{ item.subtotal|floatformat:2 }}</span>
-                            </div>
-                        </div>
+                              <div class="product-info">
+                                  <span>{{ item.product.name }}</span>
+                                  <span>Qty: {{ item.quantity }}</span>
+                                  <span class="price">Rs.{{ item.subtotal|floatformat:2 }}</span>
+                              </div>
+                          </div>
+                        </a>
                     {% endfor %}
                 {% endfor %}
             {% else %}
-                <p>You haven't placed any orders yet.</p>
+                <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 12px; border: 1px solid #eee;">
+                    <i class="fa-solid fa-box-open" style="font-size: 48px; color: #ddd; margin-bottom: 20px;"></i>
+                    <p style="font-size: 18px; color: #555;">You haven't placed any orders yet.</p>
+                    <a href="{% url 'shop' %}" style="display: inline-block; margin-top: 20px; padding: 12px 30px; background: #ff8c00; color: white; border-radius: 25px; text-decoration: none; font-weight: 500;">Start Shopping</a>
+                </div>
             {% endif %}
 
         </div>

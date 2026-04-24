@@ -55,9 +55,10 @@ class CheckoutForm(forms.Form):
         widget=forms.EmailInput(attrs={'placeholder': 'Email address', 'class': 'checkout-field'}),
     )
     delivery_same_as_billing = forms.BooleanField(
-        required=False,
+        required=True,
         initial=False,
         label='Use same address for delivery as billing',
+        error_messages={'required': 'Please select a delivery address option.'}
     )
 
     def clean_phone(self):
@@ -71,13 +72,28 @@ class CheckoutForm(forms.Form):
 class PaymentDetailsForm(forms.Form):
     payer_name = forms.CharField(
         max_length=100,
-        min_length=2,
+        required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Name on payment', 'class': 'detail-input'}),
     )
     upi_id = forms.CharField(
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'yourname@bank', 'class': 'detail-input'}),
+    )
+    card_number = forms.CharField(
+        max_length=20,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'XXXX XXXX XXXX XXXX', 'class': 'detail-input'}),
+    )
+    expiry_date = forms.CharField(
+        max_length=5,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'MM/YY', 'class': 'detail-input'}),
+    )
+    cvv = forms.CharField(
+        max_length=4,
+        required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'CVV', 'class': 'detail-input'}),
     )
 
     def __init__(self, *args, payment_method='Google Pay', **kwargs):
@@ -87,9 +103,24 @@ class PaymentDetailsForm(forms.Form):
     def clean(self):
         data = super().clean()
         upi = (data.get('upi_id') or '').strip()
-        if self.payment_method == 'UPI':
+        
+        # We need validation depending on payment method
+        if self.payment_method == 'UPI' or self.payment_method == 'Pay via UPI App':
             if not upi:
                 self.add_error('upi_id', 'UPI ID is required for UPI payments.')
             elif not re.match(r'^[\w.\-]{2,64}@[\w.\-]{2,64}$', upi):
                 self.add_error('upi_id', 'Enter a valid UPI ID (example: yourname@okbank).')
+                
+        elif self.payment_method == 'Credit / Debit Card':
+            card_number = (data.get('card_number') or '').strip()
+            if not card_number or len(card_number) < 13:
+                self.add_error('card_number', 'Please enter a valid card number.')
+            
+            expiry_date = (data.get('expiry_date') or '').strip()
+            if not re.match(r'^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$', expiry_date):
+                self.add_error('expiry_date', 'Please enter a valid expiry date (MM/YY).')
+                
+            cvv = (data.get('cvv') or '').strip()
+            if not cvv or len(cvv) < 3:
+                self.add_error('cvv', 'Please enter a valid CVV.')
         return data
